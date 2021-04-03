@@ -2,7 +2,6 @@ package class101.foo.io;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -18,11 +17,13 @@ public class PostController {
     private final PostRepository postRepository;
     private final Producer producer;
     private final ObjectMapper objectMapper;
+    private final PostCacheService postCacheService;
 
-    public PostController(PostRepository postRepository, Producer producer, ObjectMapper objectMapper) {
+    public PostController(PostRepository postRepository, Producer producer, ObjectMapper objectMapper, PostCacheService postCacheService) {
         this.postRepository = postRepository;
         this.producer = producer;
         this.objectMapper = objectMapper;
+        this.postCacheService = postCacheService;
     }
 
     // 1. 글을 작성한다.
@@ -36,9 +37,13 @@ public class PostController {
     // 2. 글 목록을 페이징하여 반환
     @GetMapping("/posts")
     public Page<Post> getPostList(@RequestParam(defaultValue = "1") Integer page) {
-        return postRepository.findAll(
-                PageRequest.of(page - 1, PAGE_SIZE, Sort.by("id").descending())
-        );
+        if (page.equals(1)) {
+            return postCacheService.getFirstPostPage();
+        } else {
+            return postRepository.findAll(
+                    PageRequest.of(page - 1, PAGE_SIZE, Sort.by("id").descending())
+            );
+        }
     }
 
     // 3. 글 번호로 조회
