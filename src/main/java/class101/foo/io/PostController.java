@@ -23,7 +23,7 @@ public class PostController {
     }
 
     // 1. 글을 작성한다.
-    @PostMapping("/post")
+    @PostMapping("/post_shard_8")
     public Post createPost(@RequestBody Post post) throws JsonProcessingException {
         String jsonPost = objectMapper.writeValueAsString(post);
         producer.sendTo(jsonPost);
