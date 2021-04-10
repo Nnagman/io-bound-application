@@ -11,7 +11,11 @@ spring:
       ddl-auto: update
   rabbitmq:
     # host: localhost
+<<<<<<< HEAD
     host: 34.85.105.229
+=======
+    host: 34.64.109.216
+>>>>>>> main
     username: guest
     password: guest
     port: 5672
